@@ -36,7 +36,9 @@ source("./Data_nesting.R")
 # Input: 
 # -- ./Output/quotes_wide.csv
 # Output: 
-# -- ./Output/nested_data.csv: Data ready for cluster analysis
+# -- ./Output/nested_data_all.csv: Data ready for visualisation
+# -- ./Output/nested_data_wide.csv: Data ready for visualisation
+
 
 source("./PRISMAflow")
 
@@ -55,7 +57,8 @@ source("./Visualisation.R")
 # Input: 
 # -- ./Output/nested_data_all.csv
 # Figures:
-# -- ./Figures/clusterfigs_n_weighted.pdf
-# -- ./Figures/clusterfigs_f_weighted.pdf
-# 
+# -- ./Figures/per-model_type_domain_scale_bubble.png (Fig. 2)
+# -- ./Figures/spatially_socially_disaggregated_pool.png (Fig. 4)
+# Output:
+# -- ./Output/VCdata_for_fig3.csv (Fig. 3)
 
