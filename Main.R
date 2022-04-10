@@ -1,8 +1,61 @@
 # Main script sourcing all other scripts
 
 # Author: Aleid Sunniva Teeuwen
-# Date: 04.10.2022
+# Date: 10.04.2022
 # Project: FoodSecGovSim2
 # Publication: A systematic review of simulation studies that assess the impact of food security governance measures
 
+rm(list = ls()) #start with a clean environment
+
+# Install dependencies
+list.of.packages <- c("ggplot2", "readxl", "dplyr", "tidyr", "countrycode", "maps", "xlsx", "rJava")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+source("./Data_processing.R") 
+
+
+# This script pre-processes the raw data exported from atlas ti so that, for instance, countries are grouped into regions and governance measures are grouped into governance tools
+# Input: 
+# -- ./Data/all_quotes_simpl.xlsx: The raw data exported from atlas ti
+# Output: 
+# -- ./Output/quotes_wide.csv & ./Output/quotes_long.csv: Two tables (long format and wide format) connecting variables and variable categories to Documents 
+# -- ./Output/all_variables.xlsx: An overview with a sheet of summary statistics for each variable
+
+rm(list = ls()) #start with a clean environment
+
+# Install dependencies
+list.of.packages <- c("dplyr", "tidyr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+source("./Data_nesting.R")
+
+
+# This script selects and organizes the data so that they co-occuring codes are aligned correctly and can be visualised accordingly
+# Input: 
+# -- ./Output/quotes_wide.csv
+# Output: 
+# -- ./Output/nested_data.csv: Data ready for cluster analysis
+
+source("./PRISMAflow")
+
+# This script is used to make the PRISMA flow diagram (Fig. 1)
+# Input: 
+# -- ./Data/20220311_full reference list revised.xlsx
+# Figures:
+# -- ./Figures/abstract_exclusion_venn_diagramm.png
+# -- ./Figures/fulltext_exclusion_venn_diagramm.png
+# Output:
+# -- ./Output/overview_for_prisma.xlsx
+
+source("./Visualisation.R")
+
+# This script is used to visualise the results 
+# Input: 
+# -- ./Output/nested_data_all.csv
+# Figures:
+# -- ./Figures/clusterfigs_n_weighted.pdf
+# -- ./Figures/clusterfigs_f_weighted.pdf
+# 
 
