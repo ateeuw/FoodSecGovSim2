@@ -24,6 +24,10 @@ source("./Functions/dict_classification.R") # for classifying and aggregating at
 source("./functions/level1_count.R") #for creating summary statistics
 source("./Functions/check_dictionary.R") # for checking whether dictionaries contain classification info for all atlas ti codes
 source("./functions/jgc.R") #optimising java 
+source("./Functions/split_and_add_by_ID.R")
+source("./Functions/split_and_add_by_doc.R")
+source("./Functions/na_to_no_nested.R")
+source("./Functions/na_to_no_nested_simpl.R")
 
 # dictionaries
 source("./dictionaries/timpl_class.R")
@@ -34,7 +38,6 @@ source("./dictionaries/goals_class.R")
 source("./dictionaries/FSi_class.R")
 source("./Dictionaries/NATO_sub.R")
 source("./Dictionaries/NATO.R")
-
 
 # Load data ###################
 print("loading data")
@@ -153,7 +156,7 @@ for(i in which(quotes_long$code_group == "spatial & temporal - country")){
   quotes_long <- rbind(quotes_long, rowi_r23)
   
 }
-rm(list = c("rowi", "rowi_cont", "rowj", "x", "countries", "dati", "i", "j", "no_country", "rowi_r23", "rowi_r7", "to_fix"))
+rm(list = c("rowi", "rowi_cont", "rowi_r7m", "rowj", "x", "countries", "dati", "i", "j", "no_country", "rowi_r23", "rowi_r7", "to_fix"))
 #############################################
 
 # Aggregate spatial scales
@@ -956,32 +959,4 @@ favars <- sort(colnames(quotes_wide)[!(colnames(quotes_wide) %in% leave_out)])
 options(java.parameters = "-Xmx8000m") #To avoid error when exporting to excel
 
 write.xlsx(as.data.frame(favars), file="./Output/all_variables.xlsx", sheetName="all variables", row.names=FALSE)
-
-varnr <- 0
-
-for(i in favars){
-  varnr <- varnr + 1
-  print("  ---------------------------------------------------")
-  print(paste(" ", i))
-  
-  gc(verbose = FALSE) #garbage collection R to avoid memory problems
-  jgc() #garbage collection Java to avoid memory problems
-  
-  clmn_nr <- which(colnames(quotes_wide)==i)
-  
-  datai <- quotes_wide[!is.na(quotes_wide[,i]),]
-  datai$name <- datai[,i]
-  datai_sum <- level1_count(sheet = datai)
-  
-  tablenamei <- paste0("./variable_summary_tables/", i, ".xlsx")
-  tablenamei = gsub("\\?", "", tablenamei) #remove question mark
-  
-  write.xlsx(cbind(i = datai_sum$name, "number" = datai_sum$n), file="./Output/all_variables.xlsx", 
-             sheetName=paste0(gsub("\\?", "", i),"_",varnr), row.names=FALSE, append = TRUE)
-  
-  print(datai_sum)
-  print("  ===================================================")
-  print("                                                     ")
-}
 #############################################
-
