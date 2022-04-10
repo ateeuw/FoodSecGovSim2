@@ -620,6 +620,12 @@ govspfoagmod <- govspfoagmod %>% distinct()
 govspfoagmod <- govspfoagmod[,-which(colnames(govspfoagmod) %in% c("modelling - aim", "modelling - feedback-loop?", "modelling - sensitivity analysis?", "modelling - validation?", "governance - combined measures?", "per effect - direct?"))] 
 govspfoagmod <- govspfoagmod %>% distinct()
 
+print("saving data: ./Output/nested_data_wide.csv")
+write.table(govspfoagmod, file = "./Output/nested_data_wide.csv", sep = ";")
+columnnames_wide <- colnames(govspfoagmod)
+save(columnnames_wide, file = "./Output/nested_names_wide.rda")
+
+
 data <- govspfoagmod
 
 # Prepare data for cluster bar graphs
