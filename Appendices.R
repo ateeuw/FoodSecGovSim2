@@ -17,6 +17,7 @@ library(egg)
 library(formattable)
 library(kableExtra)
 library(VennDiagram)
+library(dplyr)
 
 # Functions
 source("./Functions/level1_count.R")
@@ -183,5 +184,120 @@ ggplot(dat_cooc, aes(y = modeltype2, x = model_type, col = model_type, label = c
   coord_flip()
 dev.off()
 
+# Figure showing the geographic focus of different model types (Fig A8)
+colours4mtyp <- c('#999933', '#44AA99', '#117733', '#882255', '#DDCC77', '#332288',   '#CC6677', '#88CCEE', "darkgrey")
+mod <- data[,colnames(data) %in% c("model_type", "region", "Document"),]
+mod <- mod %>% distinct()
+mod <- na.omit(mod)
 
+head(mod)
 
+modsum <- mod %>% group_by(model_type, region) %>% summarise(n = n())
+
+head(modsum)
+modsum$group <- ""
+
+typsum <- mod[,c(1,2)]
+typsum <- typsum %>% distinct()
+typsum <- typsum %>% group_by(model_type) %>% summarise(n = n())
+
+typsum
+typsum$region <- "total"
+typsum$group <- "total"
+
+FSsum <- mod[,c(1,3)] 
+FSsum <- FSsum %>% distinct() %>% group_by(region) %>% summarise(n = n())
+FSsum
+
+FSsum$model_type <- "total"
+FSsum$group <- ""
+
+FSsum <- FSsum[,c(3,1,2,4)]
+
+modsum <- rbind(as.data.frame(modsum), as.data.frame(typsum))
+#totsum <- rbind(totsum, as.data.frame(domsum))
+
+modsum$group[which(modsum$model_type %in% c("cellular automata", "ABM", 'system dynamics model'))] <- "dynamic by default"
+modsum$group[which(modsum$model_type %in% c("statistical/econometric"))] <- "mixed"
+modsum$group[which(modsum$model_type %in% c("optimisation", "PE model", "CGE model"))] <- "static by default"
+modsum$group[which(modsum$model_type %in% c("microsimulation model", "mathematical other"))] <- "mixed"
+
+modsum$bubble <- modsum$n*3+2
+modsum$bubble[modsum$FS_ind == "total"] <- modsum$n[modsum$FS_ind== "total"] + 2
+
+modsum$model_type <- factor(modsum$model_type, levels = rev(c("cellular automata", "ABM", "system dynamics model", "optimisation", 
+                                                              "PE model", "CGE model", "microsimulation model","statistical/econometric", "mathematical other")))
+
+p1 <- ggplot(modsum[modsum$group ==  "dynamic by default",], 
+             aes(y = model_type, x = region, label = n)) +
+  geom_point(size = modsum$bubble[modsum$group ==  "dynamic by default"], alpha = 0.3) +
+  geom_text(col = "black", fontface = "bold", size = modsum$bubble[modsum$group ==  "dynamic by default"]/2) +
+  xlab("") +
+  ylab("") +
+  theme_classic() +
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1, size = rel(1.5*x), angle = 90), 
+        axis.text.y = element_text(size = rel(1.5*x)),  
+        axis.title = element_text(size=rel(1.2*x), face="bold"),
+        legend.title = element_text(size = rel(1.3*x), face = "bold"), 
+        legend.position = "none",
+        legend.text = element_text(size = rel(1.4*x)),
+        title = element_text(size = rel(1.4*x))) + 
+  #scale_colour_manual(drop = FALSE, name = "", values = colours4mtyp) + 
+  scale_y_discrete(labels=c("cellular automata" = "CA", "ABM" = "ABM", "system dynamics model" = "SDM", "optimisation" = "optimisation", "statistical/econometric" = "econometric",
+                            "PE model" = "PE model", "CGE model" = "CGE model", "microsimulation model" = "microsim", "mathematical other" = "other", "total" = "total")) +
+  scale_x_discrete(drop = FALSE)
+#scale_x_discrete(drop = FALSE, labels = c("1" = expression(phantom(x) <="village"), 
+#"2" = expression(phantom(x) <="municipality"), 
+#"3" = expression(phantom(x) <="province"),
+#"4" = expression(phantom(x) <="country"), 
+#"5" = expression(phantom(x) <="continent"), 
+#"6" = "> continent"))
+p1
+
+p3 <- ggplot(modsum[modsum$group ==  "static by default",], aes(y = model_type, x = region,  label = n)) +
+  geom_point(size = modsum$bubble[modsum$group ==  "static by default"], alpha = 0.3) +
+  geom_text(col = "black", fontface = "bold", size = modsum$bubble[modsum$group ==  "static by default"]/2) +
+  xlab("") +
+  ylab("") +
+  theme_classic() +
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1, size = rel(1.5*x), angle = 90), 
+        axis.text.y = element_text(size = rel(1.5*x)), 
+        axis.title = element_text(size=rel(1.2*x), face="bold"),
+        legend.title = element_text(size = rel(1.3*x), face = "bold"), 
+        legend.position = "none",
+        legend.text = element_text(size = rel(1.4*x)),
+        title = element_text(size = rel(1.4*x))) + 
+  #scale_colour_manual(drop = FALSE, name = "", values = colours4mtyp) + 
+  scale_y_discrete(labels=c("cellular automata" = "CA", "ABM" = "ABM", "system dynamics model" = "SDM", "optimisation" = "optimisation", 
+                            "PE model" = "PE model", "CGE model" = "CGE model", "microsimulation model" = "microsim", "statistical/econometric" = "econometric", "mathematical other" = "other", "total" = "total")) +
+  scale_x_discrete(drop = FALSE)
+p3
+
+p4 <- ggplot(modsum[modsum$group ==  "mixed",], aes(y = model_type, x = region, label = n)) +
+  geom_point(size = modsum$bubble[modsum$group ==  "mixed"], alpha = 0.3) +
+  geom_text(col = "black", fontface = "bold", size = modsum$bubble[modsum$group ==  "mixed"]/2) +
+  xlab("") +
+  ylab("") +
+  theme_classic() +
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1, size = rel(1.5*x), angle = 90), 
+        axis.text.y = element_text(size = rel(1.5*x)), 
+        axis.title = element_text(size=rel(1.2*x), face="bold"),
+        legend.title = element_text(size = rel(1.3*x), face = "bold"), 
+        legend.position = "none",
+        legend.text = element_text(size = rel(1.4*x)),
+        title = element_text(size = rel(1.4*x))) + 
+  #scale_colour_manual(drop=FALSE, name = "", values = colours4mtyp) + 
+  scale_y_discrete(labels=c("cellular automata" = "CA", "ABM" = "ABM", "system dynamics model" = "SDM", "optimisation" = "optimisation", 
+                            "PE model" = "PE model", "CGE model" = "CGE model", "microsimulation model" = "microsim", "statistical/econometric" = "econometric", "mathematical other" = "other", "total" = "total")) +
+  scale_x_discrete(drop = FALSE)
+p4
+
+png(filename = paste0("./Figures/per-model_type_region_bubble.png"), width = 900, height = 1500)
+ggarrange(p1 + theme(axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank(),
+                     axis.title.x = element_blank()), 
+          p3 + theme(axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank(),
+                     axis.title.x = element_blank()), 
+          p4, ncol = 1, labels = c("", "", ""))
+dev.off()
