@@ -56,9 +56,31 @@ source("./Visualisation.R")
 # This script is used to visualise the results 
 # Input: 
 # -- ./Output/nested_data_all.csv
+# -- ./Output/nested_data_wide.csv
 # Figures:
 # -- ./Figures/per-model_type_domain_scale_bubble.png (Fig. 2)
-# -- ./Figures/spatially_socially_disaggregated_pool.png (Fig. 4)
+# -- ./Figures/spatially_socially_disaggregated_pool.png (Fig. 4 + Appendix Figs. 9 & 10)
 # Output:
 # -- ./Output/VCdata_for_fig3.csv (Fig. 3)
+
+source("./Appendix.R")
+
+# This script is used to create additional information and visuals for appendix
+# Input: 
+# -- ./Output/nested_data_all.csv
+# -- ./Output/quotes_long.csv
+# Figures:
+# -- ./Figures/papers_year_table.png (Table A5)
+# -- ./Figures/cellular automatadomains.png (Figure A6)
+# -- ./Figures/ABMdomains.png (Figure A6)
+# -- ./Figures/system dynamics modeldomains.png (Figure A6)
+# -- ./Figures/optimisationdomains.png (Figure A6)
+# -- ./Figures/PE modeldomains.png (Figure A6)
+# -- ./Figures/CGE modeldomains.png (Figure A6)
+# -- ./Figures/microsimulation modeldomains.png (Figure A6)
+# -- ./Figures/statistical econometricdomains.png (Figure A6)
+# -- ./Figures/mathematical otherdomains.png (Figure A6)
+# -- ./Figures/per-model_type_domain_co-occurence_pooled.png (FIgure A7)
+# -- ./Figures/per-model_type_region_bubble.png (Figure A8)
+# Output:
 
